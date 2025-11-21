@@ -10,8 +10,9 @@
 
 ### Comparison
 - **Bicubic Baseline**: 21.13 dB
-- **Our Model**: 23.50 dB
-- **Improvement**: +2.37 dB (11.2% relative improvement)
+- **EDSR Final Model**: 23.50 dB
+- **RCAN Large (Latest)**: 24.13 dB
+- **Best Improvement**: +3.00 dB (14.2% relative improvement)
 
 ## Training Progress
 
@@ -22,6 +23,7 @@
 | Baseline | Bicubic interpolation | 0 | - | 21.13 dB |
 | V1 | EDSR (64ch, 12blocks) | 645K | Full images | 23.40 dB |
 | V2 (Final) | EDSR (96ch, 16blocks) | 2.77M | Patch-based | 23.50 dB |
+| rcanLarge | RCAN (128ch, 6 groups, 4 blocks) | 8.2M | Patch-based | 24.13 dB |
 
 ### Key Findings
 
@@ -36,9 +38,9 @@
 ## Target Analysis
 
 ### Goals vs Achievement
-- ✗ **Stretch Goal (26 dB)**: Not achieved (2.50 dB short)
-- ✗ **Minimum Target (24 dB)**: Nearly achieved (0.50 dB short)
-- ✓ **Beat Bicubic (>21.13 dB)**: Achieved with +2.37 dB improvement
+- ✗ **Stretch Goal (26 dB)**: Not achieved (1.87 dB short)
+- ✓ **Minimum Target (24 dB)**: Achieved with 24.13 dB (+0.13 dB over target)
+- ✓ **Beat Bicubic (>21.13 dB)**: Achieved with +3.00 dB improvement
 
 ### Why We Plateaued at 23.5 dB
 
@@ -136,11 +138,12 @@ If you need to achieve 26 dB PSNR, consider these approaches:
 
 ## Conclusion
 
-The current model (**23.50 dB**) represents a solid baseline with:
-- Significant improvement over bicubic (+2.37 dB)
-- NPU-compatible architecture
+The latest model **rcanLarge (24.13 dB)** achieves:
+- ✓ **Target PSNR of 24 dB**: Exceeded by 0.13 dB
+- Significant improvement over bicubic (+3.00 dB, 14.2% relative improvement)
+- NPU-compatible architecture (8.2M parameters, under 10M limit)
 - Production-ready code
-- Room for further optimization
+- Room for further optimization toward 26 dB stretch goal
 
-While it falls short of the 26 dB stretch goal, the foundation is strong and the architecture can be extended with attention mechanisms and better training strategies to reach higher PSNR values.
+The RCAN architecture with channel attention mechanisms successfully pushed performance above the 24 dB target. While it falls short of the 26 dB stretch goal, the foundation is strong and can be further extended with additional training strategies to reach higher PSNR values.
 

@@ -11,6 +11,7 @@ Single-image super resolution (3x upscaling: 256×256 → 768×768)
 | Bicubic Baseline | - | 21.13 dB | - |
 | EDSR (64ch, 12blocks) | 645K | 23.40 dB | +2.27 dB |
 | EDSR (96ch, 16blocks) + Patches | 2.77M | 23.50 dB | +2.37 dB |
+| RCAN Large | 8.2M | 24.13 dB | +3.00 dB |
 
 ### Architecture
 
@@ -47,7 +48,8 @@ Single-image super resolution (3x upscaling: 256×256 → 768×768)
 - `evaluate_model.py` - Model evaluation script
 
 ### Checkpoints
-- `checkpoints_final/best_model.pth` - Best model (23.50 dB)
+- `checkpoints_final/best_model.pth` - EDSR model (23.50 dB)
+- `checkpoints_rcan_large/best_model.pth` - RCAN Large model (24.13 dB) ⭐ Latest
 
 ## Usage
 
@@ -93,7 +95,7 @@ HR_val/val/      - 100 validation HR images (256×256, upsampled to 768×768)
 
 ## Performance Analysis
 
-The model achieved **23.50 dB PSNR**, beating the bicubic baseline by 2.37 dB. While this fell short of the stretch goal (26 dB), it demonstrates clear learning and is well above the minimum requirement (24 dB target was close at 23.50 dB).
+The latest **RCAN Large model achieved 24.13 dB PSNR**, beating the bicubic baseline by 3.00 dB and exceeding the 24 dB target. The previous EDSR model achieved 23.50 dB. While both models fall short of the stretch goal (26 dB), they demonstrate clear learning and the RCAN architecture successfully meets the minimum requirement.
 
 **Factors limiting performance:**
 - Dataset size (258 train, 100 val images)
