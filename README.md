@@ -45,7 +45,8 @@ Single-image super resolution (3x upscaling: 256×256 → 768×768)
 
 ### Evaluation
 - `evaluate_baseline.py` - Bicubic baseline evaluation
-- `evaluate_model.py` - Model evaluation script
+- `evaluate_model.py` - Model evaluation script (PyTorch)
+- `evaluate_onnx.py` - ONNX model evaluation script
 
 ### Checkpoints
 - `checkpoints_final/best_model.pth` - EDSR model (23.50 dB)
@@ -67,14 +68,23 @@ python evaluate_baseline.py
 python evaluate_model.py
 ```
 
-### Model Export (Future)
+### Model Export and ONNX Evaluation
 ```bash
-# Export to ONNX
+# Export best model to ONNX
 python export_onnx.py
+
+# Evaluate ONNX model on validation set
+python evaluate_onnx.py --onnx rcan_large.onnx --lr_dir LR_val/val --hr_dir HR_val/val
+
+# Evaluate ONNX model and save outputs
+python evaluate_onnx.py --onnx rcan_large.onnx --lr_dir LR_val/val --hr_dir HR_val/val --output_dir outputs/
 
 # Convert to MXQ (on Mobilint machine)
 python convert_onnx_to_mxq.py
 ```
+
+**Note for Submission:**
+The professor likely has a standardized evaluation script to test all submitted ONNX models on a test dataset. The `evaluate_onnx.py` script provided here follows a similar pattern and can be used to verify your ONNX model works correctly before submission.
 
 ## Dataset Structure
 

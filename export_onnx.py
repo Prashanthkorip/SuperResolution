@@ -1,17 +1,20 @@
 """
-Export the best model (RCAN Large) to ONNX format for MLA100 NPU deployment
+Export PyTorch models to ONNX format for MLA100 NPU deployment
+Supports both EDSR and RCAN models
 """
 
 import torch
 import torch.onnx
+from model import EDSR
 from model_rcan import RCAN
 
 
-def export_to_onnx(model_path, output_path, input_size=(1, 3, 256, 256)):
+def export_to_onnx(model, model_path, output_path, input_size=(1, 3, 256, 256)):
     """
     Export PyTorch model to ONNX format
     
     Args:
+        model: PyTorch model instance (already initialized)
         model_path: Path to the PyTorch checkpoint
         output_path: Path to save the ONNX model
         input_size: Input tensor size (batch, channels, height, width)
@@ -22,7 +25,6 @@ def export_to_onnx(model_path, output_path, input_size=(1, 3, 256, 256)):
     
     # Load model
     print(f"\nLoading model from {model_path}...")
-    model = RCAN(num_channels=128, num_groups=6, num_blocks=4, reduction=16)
     
     checkpoint = torch.load(model_path, map_location='cpu')
     model.load_state_dict(checkpoint['model_state_dict'])
@@ -104,11 +106,60 @@ def export_to_onnx(model_path, output_path, input_size=(1, 3, 256, 256)):
 
 
 def main():
-    # Best model: RCAN Large (24.13 dB, 8.2M params)
-    model_path = 'checkpoints_rcan_large/best_model.pth'
-    output_path = 'rcan_large.onnx'
+    import argparse
     
-    export_to_onnx(model_path, output_path)
+    parser = argparse.ArgumentParser(description='Export PyTorch model to ONNX')
+    parser.add_argument('--model', type=str, choices=['edsr_small', 'edsr_medium', 'rcan', 'rcan_large', 'all'],
+                        default='all', help='Model to export')
+    args = parser.parse_args()
+    
+    models_to_export = []
+    
+    if args.model == 'all' or args.model == 'edsr_small':
+        # EDSR Small: 64ch, 12blocks (645K params)
+        models_to_export.append({
+            'name': 'EDSR Small (645K params)',
+            'model': EDSR(num_channels=64, num_blocks=12),
+            'checkpoint': 'checkpoints/best_model.pth',
+            'output': 'edsr_small.onnx'
+        })
+    
+    if args.model == 'all' or args.model == 'edsr_medium':
+        # EDSR Medium: 96ch, 16blocks (2.77M params)
+        models_to_export.append({
+            'name': 'EDSR Medium (2.77M params)',
+            'model': EDSR(num_channels=96, num_blocks=16),
+            'checkpoint': 'checkpoints_final/best_model.pth',
+            'output': 'edsr_medium.onnx'
+        })
+    
+    if args.model == 'all' or args.model == 'rcan':
+        # RCAN: 80ch, 4 groups, 4 blocks (2.17M params)
+        models_to_export.append({
+            'name': 'RCAN (2.17M params)',
+            'model': RCAN(num_channels=80, num_groups=4, num_blocks=4, reduction=16),
+            'checkpoint': 'checkpoints_rcan/best_model.pth',
+            'output': 'rcan.onnx'
+        })
+    
+    if args.model == 'all' or args.model == 'rcan_large':
+        # RCAN Large: 128ch, 6 groups, 4 blocks (8.2M params)
+        models_to_export.append({
+            'name': 'RCAN Large (8.2M params)',
+            'model': RCAN(num_channels=128, num_groups=6, num_blocks=4, reduction=16),
+            'checkpoint': 'checkpoints_rcan_large/best_model.pth',
+            'output': 'rcan_large.onnx'
+        })
+    
+    for model_config in models_to_export:
+        print(f"\n\n{'='*80}")
+        print(f"Exporting: {model_config['name']}")
+        print(f"{'='*80}")
+        export_to_onnx(
+            model_config['model'],
+            model_config['checkpoint'],
+            model_config['output']
+        )
 
 
 if __name__ == "__main__":
