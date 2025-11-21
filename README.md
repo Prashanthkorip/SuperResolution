@@ -126,7 +126,3 @@ tqdm>=4.60.0
 - **No unsupported ops**: No BatchNorm, no complex activations
 - **Static shapes**: 256×256 input → 768×768 output
 
-## Contact
-
-For questions about the implementation, refer to the assignment materials or instructor office hours.
-
