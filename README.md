@@ -12,6 +12,7 @@ Single-image super resolution (3x upscaling: 256×256 → 768×768)
 | EDSR (64ch, 12blocks) | 645K | 23.40 dB | +2.27 dB |
 | EDSR (96ch, 16blocks) + Patches | 2.77M | 23.50 dB | +2.37 dB |
 | RCAN Large | 8.2M | 24.13 dB | +3.00 dB |
+| IMDN-Light DW (48f, 8b) | <0.9M | 24.97 dB | Lightweight candidate |
 
 ### Architecture
 
@@ -38,10 +39,13 @@ Single-image super resolution (3x upscaling: 256×256 → 768×768)
 
 ### Core Files
 - `model.py` - EDSR architecture implementation
+- `model_imdn.py` - IMDN-style lightweight architecture
 - `dataset.py` - Full image dataset loader
 - `dataset_patch.py` - Patch-based dataset loader
 - `utils.py` - PSNR calculation and utilities
 - `train_final.py` - Training script with all optimizations
+- `train_imdn.py` - Lightweight IMDN training (low params/FLOPs focus)
+- `export_imdn.py` - ONNX export script for IMDN variant
 
 ### Evaluation
 - `evaluate_baseline.py` - Bicubic baseline evaluation
@@ -70,8 +74,16 @@ python evaluate_model.py
 
 ### Model Export and ONNX Evaluation
 ```bash
-# Export best model to ONNX
+# Export best RCAN/EDSR model to ONNX
 python export_onnx.py
+
+# Export lightweight IMDN depthwise model to ONNX
+python export_imdn.py \
+  --checkpoint checkpoints_imdn/best_model.pth \
+  --output imdn_light.onnx \
+  --num_features 48 \
+  --num_blocks 8 \
+  --depthwise
 
 # Evaluate ONNX model on validation set
 python evaluate_onnx.py --onnx rcan_large.onnx --lr_dir LR_val/val --hr_dir HR_val/val
